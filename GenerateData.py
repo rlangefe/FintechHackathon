@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
 
     with open("TransData.csv", mode='w') as data:
-        data_writer = csv.writer(data, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        data_writer = csv.writer(data, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
 
         data_writer.writerow(["AccountID", "Name", "Date", "Amount", "Transaction Number","Is Subscription or Not"])
 
