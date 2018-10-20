@@ -55,15 +55,33 @@ if __name__ == '__main__':
     Subscrip.append(["iCloud",0.99,12])
     Subscrip.append(["ESPN",4.99,12])
     Subscrip.append(["ebay",21.95,12])
+    Subscrip.append(["Spotify",9.9,12])
+    Subscrip.append(["Hulu",7.9,12])
+    Subscrip.append(["Fill Oil Refill",17.99,6])
+    Subscrip.append(["Spotify",9.9,12])
+    Subscrip.append(["Dollar Shave clube",3.99,12])
+    Subscrip.append(["Home Chef",7.9,12])
+    Subscrip.append(["Love Food snack pack",19.9,12])
+    Subscrip.append(["sephora monthly box",9.9,12])
+    Subscrip.append(["bouqs flower",19.9,12])
+    Subscrip.append(["costco membership",120,1])
+    Subscrip.append(["dropbox plus",9.9,12])
+    Subscrip.append(["blue apron",39.9,12])
+    Subscrip.append(["Camfed donation",15,12])
+    Subscrip.append(["Tinder Plus",9.9,12])
+    Subscrip.append(["Wix Unlimited",14,12])
+    Subscrip.append(["Verizon Plan",40,12])
+    Subscrip.append(["Kindle Unlimited",9.9,12])
+    Subscrip.append(["HeadSpace",95,1])
+    Subscrip.append(["Hello fresh classic plan",24.99,12])
+    Subscrip.append(["Pandora Plus",4.99,12])
 
-
-
-    with open("TransData.csv", mode='w') as data:
+    with open("TransData.csv", 'w') as data:
         data_writer = csv.writer(data, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL, lineterminator='\n')
 
         data_writer.writerow(["AccountID", "Name", "Date", "Amount", "Transaction Number","Is Subscription or Not"])
 
-        numRandom = 6000
+        numRandom = 1000
         numUser = 20
 
         for accID in range (1,numUser):
@@ -72,7 +90,7 @@ if __name__ == '__main__':
                 data_writer.writerow([accID, getName(), getDate(), getAmount(), i, 0])
                 totalNum += 1
 
-            numSub = random.randint(0,len(Subscrip))
+            numSub = random.randint(10,len(Subscrip))
             subIndexArr = random.sample(range(0, len(Subscrip)), numSub)
             #write periodic part of the data in
             for i in subIndexArr:
