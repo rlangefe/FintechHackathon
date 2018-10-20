@@ -63,3 +63,16 @@ def __main__():
     clf = svm.SVC()
     clf.train(formattedData[['Name', 'Amount', 'Frequency'], formattedData['Subscription']])
 
+    chargeList = []
+
+    for i in range(6111, ):  # data['Name'].count):
+        name = data.iloc[i]['Name']
+        cost = data.iloc[i]['Amount']
+        date = data.iloc[i]['Date']
+        sub = data.iloc[i]['Is Subscription Or Not']
+        added = 0
+        for x in chargeList:
+            if x.check(name, date, cost):
+                added = 1
+        if added != 1:
+            chargeList.append(TrainCharge(name, cost, date, sub))
