@@ -47,7 +47,7 @@ def main():
     chargeList = []
     data['Date'] = pd.to_datetime(data['Date'])
 
-    for i in range(6001):
+    for i in range(data[data['Name'] == '-'].index.values.astype(int)[0]):
         if(data.iloc[i]['Name']!='-'):
             name = data.iloc[i]['Name']
             cost = data.iloc[i]['Amount']
@@ -70,12 +70,13 @@ def main():
 
     #X = np.array(X_data)
     #y = np.array(y_data)
-    neigh = KNeighborsClassifier(n_neighbors=3)
+
+    neigh = KNeighborsClassifier(n_neighbors=3, weights='distance')
     neigh.fit(X_data, y_data)
 
     chargeList = []
 
-    for i in range(6002, 12133):
+    for i in range(data[data['Name'] == '-'].index.values.astype(int)[0] +1, data[data['Name'] == '-'].index.values.astype(int)[1]):
         if (data.iloc[i]['Name'] != '-'):
             name = data.iloc[i]['Name']
             cost = data.iloc[i]['Amount']
