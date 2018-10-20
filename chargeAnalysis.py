@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from sklearn import svm
+from sklearn.neighbors import KNeighborsClassifier
 import datetime
 import time
 
@@ -45,9 +45,10 @@ class TrainCharge(Charge):
 def main():
     data = pd.read_csv("TransData.csv")
     chargeList = []
+    data['Date'] = pd.to_datetime(data['Date'])
 
-    for i in range(6067):
-        if(data.iloc[i]['Date']!='-'):
+    for i in range(6001):
+        if(data.iloc[i]['Name']!='-'):
             name = data.iloc[i]['Name']
             cost = data.iloc[i]['Amount']
             date = data.iloc[i]['Date']
@@ -57,26 +58,29 @@ def main():
                 if x.check(name, date, cost):
                     added = 1
             if added != 1:
-                chargeList.append(TrainCharge(name, cost, time.strptime(date, '%Y-%m-%d %H:%M:%S'), sub))
+                chargeList.append(TrainCharge(name, cost, date, sub))
 
-
-    formattedData = pd.DataFrame(columns=['Name', 'Amount', 'Frequency', 'Subscription'])
-
+    #formattedData = pd.DataFrame(columns=['Name', 'Amount', 'Frequency', 'Subscription'])
+    X_data = []
+    y_data = []
     for x in chargeList:
-        if (x.first_date != '-'):
-            formattedData.append([x.name, x.cost, ((x.first_date - x.last_date)/x.count), x.sub])
+        #formattedData.append({'Name' : x.name}, {'Amount' : x.cost}, {'Frequency' : ((x.first_date - x.last_date)/x.count)}, {'Subscription' : x.sub})
+        X_data.append([x.cost, ((x.first_date - x.last_date)/x.count).total_seconds()])
+        y_data.append(x.sub)
 
-    clf = svm.SVC()
-    clf.train(formattedData[['Name', 'Amount', 'Frequency'], formattedData['Subscription']])
+    X = np.array(X_data)
+    y = np.array(y_data)
+    neigh = KNeighborsClassifier(n_neighbors=3)
+    neigh.fit(X, y)
 
     chargeList = []
 
-    for i in range(6068, 12244):
+    for i in range(6002, 12133):
         if (data.iloc[i]['Name'] != '-'):
             name = data.iloc[i]['Name']
             cost = data.iloc[i]['Amount']
             date = data.iloc[i]['Date']
-            sub = data.iloc[i]['Is Subscription Or Not']
+            sub = data.iloc[i]['Is Subscription or Not']
             added = 0
             for x in chargeList:
                 if x.check(name, date, cost):
@@ -84,7 +88,17 @@ def main():
             if added != 1:
                 chargeList.append(TrainCharge(name, cost, date, sub))
 
-    print(clf.score(formattedData[['Name', 'Amount', 'Frequency'], formattedData['Subscription']]))
+    X_data = []
+    y_data = []
+    for x in chargeList:
+        # formattedData.append({'Name' : x.name}, {'Amount' : x.cost}, {'Frequency' : ((x.first_date - x.last_date)/x.count)}, {'Subscription' : x.sub})
+        X_data.append([x.cost, ((x.first_date - x.last_date) / x.count).total_seconds()])
+        y_data.append(x.sub)
+
+    X = np.array(X_data)
+    y = np.array(y_data)
+
+    print(neigh.score(X, y))
 
 
 if __name__ == '__main__':
