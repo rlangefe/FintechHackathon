@@ -64,13 +64,20 @@ if __name__ == '__main__':
         data_writer.writerow(["Name", "Date", "Amount", "Transaction Number"])
 
         numRandom = 6000
-        #write random part of the data in
-        for i in range(1,numRandom):
-            data_writer.writerow([getName(), getDate(), getAmount(), i])
-            totalNum += 1
+        numUser = 20
 
-        #write periodic part of the data in
-        for i in range(0,len(Subscrip)):
-            addPeriodData(Subscrip[i])
+        for j in range (1,numUser):
+            #write random part of the data in
+            for i in range(1,numRandom):
+                data_writer.writerow([getName(), getDate(), getAmount(), i])
+                totalNum += 1
+
+            numSub = random.randint(0,len(Subscrip))
+            subIndexArr = random.sample(range(0, len(Subscrip)), numSub)
+            #write periodic part of the data in
+            for i in subIndexArr:
+                addPeriodData(Subscrip[i])
+
+            data_writer.writerow("-----------------------------")
 
     data.close()
