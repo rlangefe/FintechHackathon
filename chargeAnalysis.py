@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn import svm
 import datetime
+import time
 
 class Charge:
     name = ''
@@ -56,7 +57,7 @@ def main():
                 if x.check(name, date, cost):
                     added = 1
             if added != 1:
-                chargeList.append(TrainCharge(name, cost, date, sub))
+                chargeList.append(TrainCharge(name, cost, time.strptime(date, '%Y-%m-%d %H:%M:%S'), sub))
 
 
     formattedData = pd.DataFrame(columns=['Name', 'Amount', 'Frequency', 'Subscription'])
