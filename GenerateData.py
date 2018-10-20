@@ -78,6 +78,6 @@ if __name__ == '__main__':
             for i in subIndexArr:
                 addPeriodData(Subscrip[i])
 
-            data_writer.writerow("-----------------------------")
+            data_writer.writerow("-----")
 
     data.close()
