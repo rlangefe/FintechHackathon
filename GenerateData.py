@@ -34,7 +34,7 @@ def addPeriodData(sub):
         for month in range(1,12,adv):
             date = datetime.datetime(year,month,1)
             totalNum = totalNum+1
-            data_writer.writerow([sub[0], date, sub[1], totalNum])
+            data_writer.writerow([accID, sub[0], date, sub[1], totalNum, 1])
 
 totalNum = 0
 
@@ -61,15 +61,15 @@ if __name__ == '__main__':
     with open("TransData.csv", mode='w') as data:
         data_writer = csv.writer(data, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-        data_writer.writerow(["Name", "Date", "Amount", "Transaction Number"])
+        data_writer.writerow(["AccountID", "Name", "Date", "Amount", "Transaction Number","Is Subscription or Not"])
 
-        numRandom = 6000
+        numRandom = 100
         numUser = 20
 
-        for j in range (1,numUser):
+        for accID in range (1,numUser):
             #write random part of the data in
             for i in range(1,numRandom):
-                data_writer.writerow([getName(), getDate(), getAmount(), i])
+                data_writer.writerow([accID, getName(), getDate(), getAmount(), i, 0])
                 totalNum += 1
 
             numSub = random.randint(0,len(Subscrip))
