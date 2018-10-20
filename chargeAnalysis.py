@@ -68,10 +68,10 @@ def main():
         X_data.append([x.cost, ((x.first_date - x.last_date)/x.count).total_seconds()])
         y_data.append(x.sub)
 
-    X = np.array(X_data)
-    y = np.array(y_data)
+    #X = np.array(X_data)
+    #y = np.array(y_data)
     neigh = KNeighborsClassifier(n_neighbors=3)
-    neigh.fit(X, y)
+    neigh.fit(X_data, y_data)
 
     chargeList = []
 
@@ -90,15 +90,23 @@ def main():
 
     X_data = []
     y_data = []
+    listOfNames = []
     for x in chargeList:
         # formattedData.append({'Name' : x.name}, {'Amount' : x.cost}, {'Frequency' : ((x.first_date - x.last_date)/x.count)}, {'Subscription' : x.sub})
+        listOfNames.append(x.name)
         X_data.append([x.cost, ((x.first_date - x.last_date) / x.count).total_seconds()])
         y_data.append(x.sub)
 
-    X = np.array(X_data)
-    y = np.array(y_data)
+    #X = np.array(X_data)
+    #y = np.array(y_data)
 
-    print(neigh.score(X, y))
+    f = open('output.txt', 'w')
+    result = neigh.predict(X_data)
+    for q in range(len(X_data)):
+        output = listOfNames[q] + ' ' + str(result[q]) + ' ' + str(y_data[q]) + '\n'
+        f.write(output)
+
+    print(neigh.score(X_data, y_data))
 
 
 if __name__ == '__main__':
