@@ -62,3 +62,4 @@ def __main__():
 
     clf = svm.SVC()
     clf.train(formattedData[['Name', 'Amount', 'Frequency'], formattedData['Subscription']])
+
