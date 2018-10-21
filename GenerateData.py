@@ -81,8 +81,8 @@ if __name__ == '__main__':
 
         data_writer.writerow(["AccountID", "Name", "Date", "Amount", "Transaction Number","Is Subscription or Not"])
 
-        numRandom = 1000
-        numUser = 20
+        numRandom = 10000
+        numUser = 10
 
         for accID in range (1,numUser):
             #write random part of the data in

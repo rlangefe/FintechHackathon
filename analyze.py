@@ -26,9 +26,6 @@ class Charge:
         self.last_date = d
         self.count += 1
 
-    def print(self):
-        return self.name + ',' + self.cost + ',' + self.first_date + ',' + self.last_date + ',' + self.count
-
 
 class TrainCharge(Charge):
         sub = 0
@@ -50,7 +47,7 @@ def analyze(file):
 
     chargeList = []
 
-    for i in range(data['Name'].count):
+    for i in range(data['Name'].count()):
         if (data.iloc[i]['Name'] != '-'):
             name = data.iloc[i]['Name']
             cost = data.iloc[i]['Amount']
@@ -67,15 +64,14 @@ def analyze(file):
     y_data = []
     listOfNames = []
     for x in chargeList:
-        # formattedData.append({'Name' : x.name}, {'Amount' : x.cost}, {'Frequency' : ((x.first_date - x.last_date)/x.count)}, {'Subscription' : x.sub})
         listOfNames.append(x.name)
-        X_data.append([x.cost, ((x.first_date - x.last_date) / x.count).total_seconds(), x.count])
-        y_data.append(x.sub)
+        X_data.append([float(x.cost), ((x.first_date - x.last_date) / x.count).total_seconds(), x.count])
+        y_data.append(float(x.sub))
 
     subscritpionList = []
     result = neigh.predict(X_data)
     for q in range(len(X_data)):
         if result[q] == 1.0:
             subscritpionList.append(listOfNames)
-
+    print(neigh.score(X_data, y_data))
     return subscritpionList
