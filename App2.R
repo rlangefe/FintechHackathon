@@ -5,9 +5,11 @@ library(tidyverse)
 library(devtools)
 library(reticulate)
 library(RJSONIO)
-library(rPython)
 
-setwd("~/Desktop/Website")
+use_virtualenv('C:/Users/lange/Miniconda3/envs/FintechHackathon', required = TRUE)
+source_python("analyze.py")
+
+setwd("C:/Users/lange/PycharmProjects/FintechHackathon")
 
 ui <- fluidPage(
   useShinyjs(),
@@ -46,7 +48,10 @@ ui <- fluidPage(
   )
 )
 
+
 server <- function(input, output) {
+  
+  
   
   output$txn <- renderDataTable({
     # input$file1 will be NULL initially. After the user selects
@@ -85,8 +90,9 @@ server <- function(input, output) {
   })
   
   observeEvent(input$button, {
-    python.load("analyze.py")
-    python.call("analyze", file1)
+    output$analyze <- renderDataTable({
+      p_to_r(analyze(inFile)) 
+    })
   })
   
 }
