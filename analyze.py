@@ -75,4 +75,4 @@ def analyze(file):
             subscritpionList.append(listOfNames[q])
     print(neigh.score(X_data, y_data))
     df = pd.DataFrame({'Name' : subscritpionList})
-    return df.to_csv('results.csv', sep=',')
+    return df #.to_csv('results.csv', sep=',')
