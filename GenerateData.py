@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
         data_writer.writerow(["AccountID", "Name", "Date", "Amount", "Transaction Number","Is Subscription or Not"])
 
-        numRandom = 10000
+        numRandom = 100
         numUser = 2
 
         for accID in range (1,numUser):

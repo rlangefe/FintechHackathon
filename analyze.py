@@ -72,6 +72,7 @@ def analyze(file):
     result = neigh.predict(X_data)
     for q in range(len(X_data)):
         if result[q] == 1.0:
-            subscritpionList.append(listOfNames)
+            subscritpionList.append(listOfNames[q])
     print(neigh.score(X_data, y_data))
-    return subscritpionList
+    df = pd.DataFrame({'Name' : subscritpionList})
+    return df
