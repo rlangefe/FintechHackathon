@@ -1,8 +1,7 @@
-import numpy as np
 import pandas as pd
 from sklearn.neighbors import KNeighborsClassifier
 import datetime
-import time
+from sklearn.externals import joblib
 
 class Charge:
     name = ''
@@ -65,49 +64,48 @@ def main():
     y_data = []
     for x in chargeList:
         #formattedData.append({'Name' : x.name}, {'Amount' : x.cost}, {'Frequency' : ((x.first_date - x.last_date)/x.count)}, {'Subscription' : x.sub})
-        X_data.append([x.cost, ((x.first_date - x.last_date)/x.count).total_seconds()])
+        X_data.append([x.cost, ((x.first_date - x.last_date)/x.count).total_seconds(), x.count])
         y_data.append(x.sub)
-
-    #X = np.array(X_data)
-    #y = np.array(y_data)
 
     neigh = KNeighborsClassifier(n_neighbors=3, weights='distance')
     neigh.fit(X_data, y_data)
 
-    chargeList = []
-
-    for i in range(data[data['Name'] == '-'].index.values.astype(int)[0] +1, data[data['Name'] == '-'].index.values.astype(int)[1]):
-        if (data.iloc[i]['Name'] != '-'):
-            name = data.iloc[i]['Name']
-            cost = data.iloc[i]['Amount']
-            date = data.iloc[i]['Date']
-            sub = data.iloc[i]['Is Subscription or Not']
-            added = 0
-            for x in chargeList:
-                if x.check(name, date, cost):
-                    added = 1
-            if added != 1:
-                chargeList.append(TrainCharge(name, cost, date, sub))
-
-    X_data = []
-    y_data = []
-    listOfNames = []
-    for x in chargeList:
-        # formattedData.append({'Name' : x.name}, {'Amount' : x.cost}, {'Frequency' : ((x.first_date - x.last_date)/x.count)}, {'Subscription' : x.sub})
-        listOfNames.append(x.name)
-        X_data.append([x.cost, ((x.first_date - x.last_date) / x.count).total_seconds()])
-        y_data.append(x.sub)
-
-    #X = np.array(X_data)
-    #y = np.array(y_data)
+    filename = "finalized_model.sav"
+    joblib.dump(neigh, filename)
 
     f = open('output.txt', 'w')
-    result = neigh.predict(X_data)
-    for q in range(len(X_data)):
-        output = listOfNames[q] + ' ' + str(result[q]) + ' ' + str(y_data[q]) + '\n'
-        f.write(output)
+    for v in range(1, 199):
+        chargeList = []
 
-    print(neigh.score(X_data, y_data))
+        for i in range(data[data['Name'] == '-'].index.values.astype(int)[v-1]+1, data[data['Name'] == '-'].index.values.astype(int)[v]):
+            if (data.iloc[i]['Name'] != '-'):
+                name = data.iloc[i]['Name']
+                cost = data.iloc[i]['Amount']
+                date = data.iloc[i]['Date']
+                sub = data.iloc[i]['Is Subscription or Not']
+                added = 0
+                for x in chargeList:
+                    if x.check(name, date, cost):
+                        added = 1
+                if added != 1:
+                    chargeList.append(TrainCharge(name, cost, date, sub))
+
+        X_data = []
+        y_data = []
+        listOfNames = []
+        for x in chargeList:
+            # formattedData.append({'Name' : x.name}, {'Amount' : x.cost}, {'Frequency' : ((x.first_date - x.last_date)/x.count)}, {'Subscription' : x.sub})
+            listOfNames.append(x.name)
+            X_data.append([x.cost, ((x.first_date - x.last_date) / x.count).total_seconds(), x.count])
+            y_data.append(x.sub)
+
+        result = neigh.predict(X_data)
+        for q in range(len(X_data)):
+            output = listOfNames[q] + ' ' + str(result[q]) + ' ' + str(y_data[q]) + '\n'
+            if result[q] != y_data[q]:
+                f.write(output)
+
+        print(neigh.score(X_data, y_data))
 
 
 if __name__ == '__main__':

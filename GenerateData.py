@@ -90,7 +90,7 @@ if __name__ == '__main__':
                 data_writer.writerow([accID, getName(), getDate(), getAmount(), i, 0])
                 totalNum += 1
 
-            numSub = random.randint(10,len(Subscrip))
+            numSub = random.randint(20,len(Subscrip))
             subIndexArr = random.sample(range(0, len(Subscrip)), numSub)
             #write periodic part of the data in
             for i in subIndexArr:
