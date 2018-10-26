@@ -96,7 +96,8 @@ if __name__ == '__main__':
             for i in subIndexArr:
                 addPeriodData(Subscrip[i])
 
-            data_writer.writerow(["-", "-", datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "-", "-"])
+            if numUser > 2:
+                data_writer.writerow(["-", "-", datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "-", "-"])
             print(str(numSub))
 
     data.close()

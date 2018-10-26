@@ -1,4 +1,4 @@
-import pandas as pd
+import pandas
 from sklearn.neighbors import KNeighborsClassifier
 import datetime
 from sklearn.externals import joblib
@@ -42,8 +42,9 @@ class TrainCharge(Charge):
 def analyze(file):
     neigh = joblib.load('finalized_model.sav')
 
-    data = pd.read_csv(file)
-    data['Date'] = pd.to_datetime(data['Date'])
+    data = pandas.read_csv(file, usecols=['AccountID','Name','Date','Amount','Transaction Number','Is Subscription or Not'])
+
+    data['Date'] = pandas.to_datetime(data['Date'])
 
     chargeList = []
 
@@ -74,5 +75,5 @@ def analyze(file):
         if result[q] == 1.0:
             subscritpionList.append(listOfNames[q])
     print(neigh.score(X_data, y_data))
-    df = pd.DataFrame({'Name' : subscritpionList})
-    return df #.to_csv('results.csv', sep=',')
+    df = pandas.DataFrame({'Name': subscritpionList})
+    return df
