@@ -6,15 +6,22 @@ library(devtools)
 library(reticulate)
 library(RJSONIO)
 
-use_virtualenv('C:/Users/lange/Miniconda3/envs/FintechHackathon', required = TRUE)
-source_python("analyze.py")
-
 setwd("C:/Users/lange/PycharmProjects/FintechHackathon")
+conda_python("FintechHackathon")
+source_python("analyze.py", convert=TRUE)
+use_virtualenv("C:/Users/lange/Miniconda3/envs/r-reticulate")
+
+
+py_run_string('import pandas')
+
+os <- import('os');
+pd <- import("pandas", convert=TRUE)
+np <- import("numpy")
 
 ui <- fluidPage(
   useShinyjs(),
   navbarPage(
-    "Hacking Alpha",
+    "UNSUB",
     tabPanel(
       "Upload",
       sidebarLayout(
@@ -38,11 +45,11 @@ ui <- fluidPage(
       )      
     ),
     tabPanel(
-      "Subscriptions",
-      checkboxInput("hideshow", "Show?", F),
+      "Your Active Subscriptions",
+      # checkboxInput("hideshow", "Show?", F),
       div(
         id="hello_text",
-        textOutput("txt")
+        dataTableOutput("analyze")
       )
     )
   )
@@ -54,11 +61,7 @@ server <- function(input, output) {
   
   
   output$txn <- renderDataTable({
-    # input$file1 will be NULL initially. After the user selects
-    # and uploads a file, it will be a data frame with 'name',
-    # 'size', 'type', and 'datapath' columns. The 'datapath'
-    # column will contain the local filenames where the data can
-    # be found.
+
     inFile <- input$file1
     
     if (is.null(inFile)) {
@@ -66,6 +69,7 @@ server <- function(input, output) {
       return(NULL)
       
     } else {
+    
       
       this_file <- read_csv(inFile$datapath)
       
@@ -76,22 +80,24 @@ server <- function(input, output) {
     }
   })
   
-  observeEvent(input$hideshow, {
-    
-    if (input$hideshow == F) {
-      hide(id="hello_text", anim = F)
-    } else {
-      show(id="hello_text", anim = F)
-      output$txt <- renderText({
-        "test output"
-      })
-    }
-    
-  })
+  # observeEvent(input$hideshow, {
+  #   
+  #   if (input$hideshow == F) {
+  #     hide(id="hello_text", anim = F)
+  #   } else {
+  #     show(id="hello_text", anim = F)
+  #     output$txt <- renderText({
+  #       "test output"
+  #     })
+  #   }
+  #   
+  # })
   
   observeEvent(input$button, {
     output$analyze <- renderDataTable({
-      p_to_r(analyze(inFile)) 
+      
+      data <- analyze(input$file1$datapath)
+                                      
     })
   })
   
