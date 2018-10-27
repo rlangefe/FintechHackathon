@@ -45,6 +45,7 @@ def analyze(file):
     data = pandas.read_csv(file, usecols=['AccountID','Name','Date','Amount','Transaction Number','Is Subscription or Not'])
 
     data['Date'] = pandas.to_datetime(data['Date'])
+    data.drop(0)
 
     chargeList = []
 
@@ -63,17 +64,21 @@ def analyze(file):
 
     X_data = []
     y_data = []
-    listOfNames = []
+    listOfNames = [[]]
     for x in chargeList:
-        listOfNames.append(x.name)
-        X_data.append([float(x.cost), ((x.first_date - x.last_date) / x.count).total_seconds(), x.count])
-        y_data.append(float(x.sub))
+        if (x.cost != 'NaN'):
+            listOfNames.append([x.name, round(x.cost, 2)])
+            X_data.append([float(x.cost), ((x.first_date - x.last_date) / x.count).total_seconds(), x.count])
+            y_data.append(float(x.sub))
 
-    subscritpionList = []
+    subscritpionList = [[]]
     result = neigh.predict(X_data)
     for q in range(len(X_data)):
         if result[q] == 1.0:
             subscritpionList.append(listOfNames[q])
+
     print(neigh.score(X_data, y_data))
-    df = pandas.DataFrame({'Name': subscritpionList})
+    df = pandas.DataFrame(subscritpionList, columns=['Name', 'Amount'])
+    df['Amount'] = '$' + round(df['Amount'], 2).astype(str)
+    #df.drop(0)
     return df
