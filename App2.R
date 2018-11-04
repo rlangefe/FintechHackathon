@@ -20,7 +20,20 @@ np <- import("numpy")
 
 ui <- fluidPage(
   
-  tags$head(tags$script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js")), # add jQuery min script
+  tags$head(
+    # jQuery
+    tags$script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"),
+    # Loading icon CSS
+    tags$style(".loader, .loader:before, .loader:after { background: #000000; -webkit-animation: load1 1s infinite ease-in-out; animation: load1 1s infinite ease-in-out; width: 1em; height: 4em; }
+      .loader { color: #000000; text-indent: -9999em; margin: 88px auto;position: relative; font-size: 11px; -webkit-transform: translateZ(0); -ms-transform: translateZ(0); transform: translateZ(0); -webkit-animation-delay: -0.16s; animation-delay: -0.16s; }
+      .loader:before, .loader:after { position: absolute; top: 0; content: ''; }
+      .loader:before { left: -1.5em; -webkit-animation-delay: -0.32s; animation-delay: -0.32s; }
+      .loader:after { left: 1.5em; }
+      @-webkit-keyframes load1 { 0%, 80%, 100% { box-shadow: 0 0; height: 4em; } 40% { box-shadow: 0 -2em; height: 5em; } }
+      @keyframes load1 { 0%, 80%, 100% { box-shadow: 0 0; height: 4em; } 40% { box-shadow: 0 -2em; height: 5em; } }
+    ")
+  ), 
+  
   useShinyjs(),
   
   navbarPage(
@@ -61,6 +74,11 @@ ui <- fluidPage(
       div(
         id="hello_text",
         dataTableOutput("analyze")
+      ),
+      div(
+        id="loader_model_results"
+        , class="loader"
+        , style="display:none;"
       )
     )
     
@@ -81,7 +99,6 @@ server <- function(input, output, session) {
       
     } else {
     
-      
       this_file <- read_csv(inFile$datapath)
       
       shinyjs::show(id="findsubs", anim=T, time=1) # reveal "Find My Subscriptions" button
@@ -96,22 +113,30 @@ server <- function(input, output, session) {
     
     id = "findsubs",
     expr = {
+      
+      shinyjs::toggleState("findsubs") # disable button to prevent double clicks
+      
+      shinyjs::show(id="loader_model_results", anim=F) # show loading div
+      
       updateTabsetPanel(
         session, 
         inputId = "navigate", 
         selected = "subs_tab"
       )
+      
     }
 
   )  
   
   # Execute the model and attach results ---------------
-  observeEvent(input$button, {
+  observeEvent(input$findsubs, {
+
     output$analyze <- renderDataTable({
       
       data <- analyze(input$file1$datapath)
                                       
     })
+
   })
   
 }
