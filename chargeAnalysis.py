@@ -63,7 +63,7 @@ def main():
     y_data = []
     for x in chargeList:
         #formattedData.append({'Name' : x.name}, {'Amount' : x.cost}, {'Frequency' : ((x.first_date - x.last_date)/x.count)}, {'Subscription' : x.sub})
-        X_data.append([float(x.cost), ((x.first_date - x.last_date)/x.count).total_seconds(), x.count])
+        X_data.append([float(x.cost), ((x.first_date - x.last_date)/x.count).total_seconds()])
         y_data.append(x.sub)
 
     from sklearn.neural_network import MLPClassifier
@@ -74,7 +74,7 @@ def main():
     filename = "finalized_model.sav"
     joblib.dump(neigh, filename)
 
-    f = open('output.txt', 'w')
+'''    f = open('output.txt', 'w')
     for v in range(1, 9):
         chargeList = []
 
@@ -113,7 +113,7 @@ def main():
                     correct += 1
 
         print('' + str(v) + ' ' + str(float(correct)/actual) + ' ' + str(neigh.score(X_data, y_data)) + '\n')
-
+'''
 
 if __name__ == '__main__':
     main()
