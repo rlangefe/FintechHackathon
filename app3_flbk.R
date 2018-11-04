@@ -10,17 +10,19 @@ library(reticulate)
 # use_virtualenv('C:/Users/gleas/Google Drive/Coding/R/FintechHackathon-master/FintechHackathon-master', required = TRUE)
 # source_python("analyze.py")
 
-ui <- fluidPage(
-  useShinyjs(),
-  navbarPage(
-    "UNSUB",
-    tabPanel(
-      "Upload",
-      sidebarLayout(
-        sidebarPanel(
-          fileInput(
-            inputId = "file1", 
-            label = "Choose CSV File",
+ui <- fluidPage( # create page
+  tags$head(tags$script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js")), # add jQuery min script
+  useShinyjs(), # initialize shinyjs
+  navbarPage( # create navbar
+    title = "UNSUB", # website title on navbar
+    id = "navigate", # id for tabset
+    tabPanel( # first panel
+      title = "Upload", # text that appears in navbar
+      sidebarLayout( # content - sidebar layout
+        sidebarPanel( 
+          fileInput( # file box
+            inputId = "file1", # set id attribute
+            label = "Choose CSV File", # text that appears in upload box
             accept = c(
               "text/csv",
               "text/comma-separated-values,text/plain",
@@ -28,13 +30,10 @@ ui <- fluidPage(
             )
           ),
           actionButton(
-            input="button",
+            inputId="findsubs",
+            style="display:none;",
             label="Find My Subscriptions"
           ),
-          # div(
-          #   id="in_method",
-          #   textOutput("in_txt")
-          # ),
           tags$hr(),
           checkboxInput("header", "Header", TRUE)
         ),
@@ -44,8 +43,8 @@ ui <- fluidPage(
       )      
     ),
     tabPanel(
-      "Your Active Subscriptions",
-      # checkboxInput("hideshow", "Show?", F),
+      title = "Your Active Subscriptions",
+      value = "subs_tab",
       div(
         id="hello_text",
         dataTableOutput("companies")
@@ -54,8 +53,9 @@ ui <- fluidPage(
   )
 )
 
-server <- function(input, output) {
+server <- function(input, output, session) {
   
+  # Render data table on home page --------------
   output$txn <- 
     renderDataTable({
       inFile <- input$file1
@@ -63,26 +63,27 @@ server <- function(input, output) {
       if (is.null(inFile)) {
         return(NULL)
       } else {
-        this_file <- read_csv(inFile$datapath)
+        this_file <- read_csv(inFile$datapath) # read in data
+        shinyjs::show(id="findsubs", anim=T, time=1) # reveal "Find My Subscriptions" button
         this_file   
       }
     
     })
   
-  # observeEvent(input$hideshow, {
-  #   
-  #   if (input$hideshow == F) {
-  #     hide(id="hello_text", anim = F)
-  #   } else {
-  #     show(id="hello_text", anim = F)
-  #     output$txt <- renderText({
-  #       "test output"
-  #     })
-  #   }
-  #   
-  # })
+  # Onclick redirect functionality -----------
+  onclick(
+    id = "findsubs", 
+    expr = {
+      # alert("yolo") 
+      updateTabsetPanel(
+        session, 
+        inputId = "navigate", 
+        selected = "subs_tab")
+    }
+  )
   
-  observeEvent(input$button, {
+  # Generate sample subscriptions -------------
+  observeEvent(input$findsubs, {
     output$companies <- renderDataTable({
         tibble(
           companyname = c(
@@ -116,8 +117,10 @@ server <- function(input, output) {
           )
         )
     })
+    
   })
   
+  # End Server ----------------------
 }
 
 shinyApp(ui, server)
