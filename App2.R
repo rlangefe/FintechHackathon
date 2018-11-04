@@ -19,11 +19,17 @@ pd <- import("pandas", convert=TRUE)
 np <- import("numpy")
 
 ui <- fluidPage(
+  
+  tags$head(tags$script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js")), # add jQuery min script
   useShinyjs(),
+  
   navbarPage(
-    "UNSUB",
+    
+    title = "UNSUB",
+    id = "navigate",
+    
     tabPanel(
-      "Upload",
+      title = "Upload",
       sidebarLayout(
         sidebarPanel(
           fileInput(
@@ -35,7 +41,11 @@ ui <- fluidPage(
               ".csv"
             )
           ),
-          actionButton("button","Find My Subscriptions"),
+          actionButton(
+            inputId = "findsubs", 
+            style="display:none;", 
+            label = "Find My Subscriptions"
+          ),
           tags$hr(),
           checkboxInput("header", "Header", TRUE)
         ),
@@ -44,22 +54,23 @@ ui <- fluidPage(
         )
       )      
     ),
+    
     tabPanel(
-      "Your Active Subscriptions",
-      # checkboxInput("hideshow", "Show?", F),
+      title = "Your Active Subscriptions",
+      value = "subs_tab",
       div(
         id="hello_text",
         dataTableOutput("analyze")
       )
     )
+    
   )
 )
 
 
-server <- function(input, output) {
+server <- function(input, output, session) {
   
-  
-  
+  # Render data table on home page --------------
   output$txn <- renderDataTable({
 
     inFile <- input$file1
@@ -73,26 +84,28 @@ server <- function(input, output) {
       
       this_file <- read_csv(inFile$datapath)
       
-      this_file %>% 
-        mutate(first = as.integer(1)) %>%
-        select(first, everything())      
+      shinyjs::show(id="findsubs", anim=T, time=1) # reveal "Find My Subscriptions" button
+      
+      this_file 
       
     }
   })
   
-  # observeEvent(input$hideshow, {
-  #   
-  #   if (input$hideshow == F) {
-  #     hide(id="hello_text", anim = F)
-  #   } else {
-  #     show(id="hello_text", anim = F)
-  #     output$txt <- renderText({
-  #       "test output"
-  #     })
-  #   }
-  #   
-  # })
+  # Onclick redirect functionality -----------
+  onclick(
+    
+    id = "findsubs",
+    expr = {
+      updateTabsetPanel(
+        session, 
+        inputId = "navigate", 
+        selected = "subs_tab"
+      )
+    }
+
+  )  
   
+  # Execute the model and attach results ---------------
   observeEvent(input$button, {
     output$analyze <- renderDataTable({
       
