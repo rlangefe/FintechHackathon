@@ -11,7 +11,6 @@ conda_python("FintechHackathon")
 source_python("analyze.py", convert=TRUE)
 use_virtualenv("C:/Users/lange/Miniconda3/envs/r-reticulate")
 
-
 py_run_string('import pandas')
 
 os <- import('os');
@@ -22,7 +21,7 @@ ui <- fluidPage(
   
   tags$head(
     # jQuery
-    tags$script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"),
+    tags$script(src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"),
     # Loading icon CSS
     tags$style(".loader, .loader:before, .loader:after { background: #000000; -webkit-animation: load1 1s infinite ease-in-out; animation: load1 1s infinite ease-in-out; width: 1em; height: 4em; }
       .loader { color: #000000; text-indent: -9999em; margin: 88px auto;position: relative; font-size: 11px; -webkit-transform: translateZ(0); -ms-transform: translateZ(0); transform: translateZ(0); -webkit-animation-delay: -0.16s; animation-delay: -0.16s; }
@@ -69,16 +68,37 @@ ui <- fluidPage(
     ),
     
     tabPanel(
+      
       title = "Your Active Subscriptions",
       value = "subs_tab",
+      
       div(
-        id="hello_text",
+        id="analyze_div",
         dataTableOutput("analyze")
       ),
+      
       div(
         id="loader_model_results"
         , class="loader"
         , style="display:none;"
+      ),
+      
+      # Hide loader image when data table renders
+      tags$script("
+        $('#analyze').on('draw.dt', function () {
+            $('loader_model_results').hide();
+        });
+      ")
+      
+    ),
+    
+    tabPanel(
+      title = "Insights",
+      value = "insi_tab",
+      style = "display:none;",
+      div(
+        id = "insi_content",
+        "Insights dashboard content goes HERE"
       )
     )
     
@@ -134,7 +154,7 @@ server <- function(input, output, session) {
     output$analyze <- renderDataTable({
       
       data <- analyze(input$file1$datapath)
-                                      
+      
     })
 
   })

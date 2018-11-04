@@ -49,7 +49,13 @@ ui <- fluidPage( # create page
         id="hello_text",
         dataTableOutput("companies")
       )
-    )
+    ),
+    
+    tags$script("
+      $('#txn').on('draw.dt', function () {
+        alert('table loaded');
+      });
+    ")
   )
 )
 
@@ -84,7 +90,8 @@ server <- function(input, output, session) {
   
   # Generate sample subscriptions -------------
   observeEvent(input$findsubs, {
-    output$companies <- renderDataTable({
+    output$companies <- renderDataTable(
+      expr = {
         tibble(
           companyname = c(
             "Spotify"
@@ -116,7 +123,8 @@ server <- function(input, output, session) {
             ,"Wix Unlimited"
           )
         )
-    })
+      }
+    )
     
   })
   
