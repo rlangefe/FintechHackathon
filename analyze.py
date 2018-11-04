@@ -66,10 +66,9 @@ def analyze(file):
     y_data = []
     listOfNames = [[]]
     for x in chargeList:
-        if (x.cost != 'NaN'):
-            listOfNames.append([x.name, round(x.cost, 2)])
-            X_data.append([float(x.cost), ((x.first_date - x.last_date) / x.count).total_seconds(), x.count])
-            y_data.append(float(x.sub))
+        listOfNames.append([x.name, round(x.cost, 2)])
+        X_data.append([float(x.cost), ((x.first_date - x.last_date) / x.count).total_seconds()])
+        y_data.append(float(x.sub))
 
     subscritpionList = [[]]
     result = neigh.predict(X_data)
