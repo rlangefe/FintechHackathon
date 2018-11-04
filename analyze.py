@@ -77,7 +77,6 @@ def analyze(file):
             subscritpionList.append(listOfNames[q])
 
     print(neigh.score(X_data, y_data))
-    print(subscritpionList)
     df = pandas.DataFrame(subscritpionList, columns=['Name', 'Amount'])
     df['Amount'] = '$' + round(df['Amount'], 2).astype(str)
     df.drop(df.index[0])
