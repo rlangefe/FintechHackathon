@@ -70,14 +70,15 @@ def analyze(file):
         X_data.append([float(x.cost), ((x.first_date - x.last_date) / x.count).total_seconds()])
         y_data.append(float(x.sub))
 
-    subscritpionList = [[]]
+    subscritpionList = []
     result = neigh.predict(X_data)
     for q in range(len(X_data)):
         if result[q] == 1.0:
             subscritpionList.append(listOfNames[q])
 
     print(neigh.score(X_data, y_data))
+    print(subscritpionList)
     df = pandas.DataFrame(subscritpionList, columns=['Name', 'Amount'])
     df['Amount'] = '$' + round(df['Amount'], 2).astype(str)
-    #df.drop(0)
+    df.drop(df.index[0])
     return df
