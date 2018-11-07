@@ -5,9 +5,11 @@ library(tidyverse)
 library(devtools)
 library(reticulate)
 library(RJSONIO)
+library(jsonlite)
+library(stringr)
 
 setwd("C:/Users/lange/PycharmProjects/FintechHackathon")
-conda_python("FintechHackathon")
+# conda_python("FintechHackathon")
 source_python("analyze.py", convert=TRUE)
 #use_virtualenv("C:/Users/lange/Miniconda3/envs/r-reticulate")
 
@@ -81,14 +83,7 @@ ui <- fluidPage(
         id="loader_model_results"
         , class="loader"
         , style="display:none;"
-      ),
-      
-      # Hide loader image when data table renders
-      tags$script("
-        $('#analyze').on('draw.dt', function () {
-            $('loader_model_results').hide();
-        });
-      ")
+      )
       
     ),
     
@@ -102,8 +97,16 @@ ui <- fluidPage(
       )
     )
     
-  )
-    )
+  ),
+  
+  # Hide loader image when data table renders
+  tags$script("
+    $('#analyze').on('draw.dt', function () {
+        $('#loader_model_results').hide();
+    });
+  ")
+  
+)
 
 
 server <- function(input, output, session) {
@@ -121,17 +124,17 @@ server <- function(input, output, session) {
       
       this_file <- read_csv(inFile$datapath)[0:5]
       
-      str(type.convert(this_file))
+      this_file$Amount <- 
+        this_file$Amount %>%
+        as.double()
       
-      for (i in 0:nrow(this_file)) {
-        this_file[i,4] <- paste("$", this_file[i,4], sep = "")
-      }
-      
-      
+      this_file$Amount <-
+        sprintf("%.2f", round(this_file$Amount,2))
+
       shinyjs::show(id="findsubs", anim=T, time=1) # reveal "Find My Subscriptions" button
       
-      this_file 
-      
+      return(this_file) 
+
     }
   })
   
@@ -161,6 +164,24 @@ server <- function(input, output, session) {
     output$analyze <- renderDataTable({
       
       data <- analyze(input$file1$datapath)
+      
+      data_list <- jsonlite::fromJSON(data)
+      
+      data_out <-
+        data_list$data %>%
+        as_tibble() %>%
+        rename(Name = V1, Amount = V2)
+      
+      data_out$Amount <-
+        data_out$Amount %>%
+        stringr::str_replace("[$]","") %>%
+        as.double() %>%
+        round(2)
+      
+      data_out$Amount <-
+        sprintf("%.2f", round(data_out$Amount,2))      
+      
+      return(data_out)
       
     })
     

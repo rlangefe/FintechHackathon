@@ -80,4 +80,4 @@ def analyze(file):
     df = pandas.DataFrame(subscritpionList, columns=['Name', 'Amount'])
     df['Amount'] = '$' + round(df['Amount'], 2).astype(str)
     df.drop(df.index[0])
-    return df
+    return df.to_json(orient='split')
